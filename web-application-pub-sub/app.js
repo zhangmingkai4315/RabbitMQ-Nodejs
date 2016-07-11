@@ -14,7 +14,7 @@ var amqpConn= null;
 var pubChannel = null;
 
 function startConnRabbitMQ(){
-  amqp.connect("amqp://localhost", function(err, conn) {
+  amqp.connect("amqp://mike:123456@localhost", function(err, conn) {
     if(err){
       console.log("[x]Error:"+err);
       return
@@ -53,8 +53,6 @@ function startPublisher(){
     pubChannel=ch;
     console.log("[*]Rabbitmq channel is ready now!")
   })
-
-
 }
 
 startConnRabbitMQ();
@@ -73,6 +71,7 @@ app.post("/dns",function(req,res){
   //  res.json(req.body.domain);
    if(typeof req.body.domain==='undefined'){
      res.status(400).json({"Error":"No domain data was posted!"});
+     return
    }
   //  传递给后端的rabbitmq服务器
   try {
@@ -80,13 +79,16 @@ app.post("/dns",function(req,res){
       if (err){
         console.log(err)
         res.status(500).json({"Error":err});
+        return
       }else{
         res.status(200).json({"Message":"Success post request to backend rabbitmq"})
+        return
       }
     })
   } catch (e) {
       console.log(e)
       res.status(500).json({"Error":e})
+      return
   }
 });
 
